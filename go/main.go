@@ -17,7 +17,8 @@ func main() {
 	db.DB()
 
 	router := gin.Default()
-	
-	router.GET("/users", controller.getUsers)
+
+	router.GET("/user/:id")
+	router.GET("/users", controller.GetUsers)
 	log.Fatal(router.Run(":10000"))
 }
