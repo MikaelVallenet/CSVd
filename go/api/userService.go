@@ -1,10 +1,9 @@
-package controller
+package api
 
 import (
 	"github.com/Mikatech/CTF-AI/database"
 	"github.com/Mikatech/CTF-AI/model"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -13,56 +12,39 @@ type NewUser struct {
 	Password string `json:"password" binding:"required"`
 }
 
-func GetUsers(c *gin.Context) {
+type Env struct {
+	Svc *database.UserService
+}
 
-	var users []model.User
-
-	db, err := database.Database()
+func (env Env) GetUsers(c *gin.Context) {
+	users, err := env.Svc.GetUsers()
 	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	if err := db.Find(&users).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, users)
 }
 
-func GetUser(c *gin.Context) {
-
-	var user model.User
-
-	db, err := database.Database()
+func (env Env) GetUser(c *gin.Context) {
+	user, err := env.Svc.GetUser(c.Param("id"))
 	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	if err := db.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found!"})
+		return
 	}
 
 	c.JSON(http.StatusOK, user)
 }
 
-func CreateUser(c *gin.Context) {
-
+func (env Env) CreateUser(c *gin.Context) {
 	var user NewUser
-
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	newUser := model.User{Name: user.Name, Password: user.Password}
-
-	db, err := database.Database()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	if err := db.Create(&newUser).Error; err != nil {
+	if err := env.Svc.CreateUser(newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -70,20 +52,15 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, newUser)
 }
 
-func DeleteUser(c *gin.Context) {
-
-	var user model.User
-
-	db, err := database.Database()
+func (env Env) DeleteUser(c *gin.Context) {
+	user, err := env.Svc.GetUser(c.Param("id"))
 	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	if err := db.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found!"})
+		return
 	}
 
-	if err := db.Delete(&user).Error; err != nil {
+	err = env.Svc.DeleteUser(user)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
