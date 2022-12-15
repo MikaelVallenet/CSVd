@@ -3,12 +3,13 @@ package api
 import (
 	"github.com/Mikatech/CTF-AI/database"
 	"github.com/Mikatech/CTF-AI/model"
+	"github.com/Mikatech/CTF-AI/tools"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type NewUser struct {
-	Name     string `json:"name" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -32,7 +33,6 @@ func (env Env) GetUser(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found!"})
 		return
 	}
-
 	c.JSON(http.StatusOK, user)
 }
 
@@ -42,8 +42,8 @@ func (env Env) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	newUser := model.User{Name: user.Name, Password: user.Password}
+	user.Password = tools.EncryptPassword(user.Password)
+	newUser := model.User{Email: user.Email, Password: user.Password}
 	if err := env.Svc.CreateUser(newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

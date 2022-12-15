@@ -3,7 +3,6 @@ module github.com/Mikatech/CTF-AI
 go 1.18
 
 require (
-	github.com/carlosm27/apiwithgorm v0.0.0-20220501014619-bae407a643db
 	github.com/gin-gonic/gin v1.8.1
 	gorm.io/driver/sqlite v1.4.3
 	gorm.io/gorm v1.24.1

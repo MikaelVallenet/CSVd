@@ -17,9 +17,6 @@ func main() {
 	env := api.Env{Svc: svc}
 
 	router := gin.Default()
-	router.GET("/user/:id", env.GetUser)
-	router.GET("/users", env.GetUsers)
-	router.POST("/user", env.CreateUser)
-	router.DELETE("/user/:id", env.DeleteUser)
+	api.ApplyRoutes(env, router)
 	log.Fatal(router.Run(":10000"))
 }

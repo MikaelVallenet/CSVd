@@ -43,6 +43,17 @@ func (svc UserService) GetUser(userId string) (model.User, error) {
 	return user, nil
 }
 
+func (svc UserService) GetUserByMail(userMail string) (model.User, error) {
+	var user model.User
+
+	err := svc.db.Where("email = ?", userMail).First(&user).Error
+	if err != nil {
+		return model.User{}, err
+	}
+
+	return user, nil
+}
+
 func (svc UserService) CreateUser(newUser model.User) error {
 	if err := svc.db.Create(&newUser).Error; err != nil {
 		return err
