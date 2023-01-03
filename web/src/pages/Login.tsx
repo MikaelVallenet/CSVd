@@ -4,7 +4,7 @@ const Login = () => {
     return (
         <div className="flex flex-col justify-center min-h-screen overflow-hidden">
             <div className="w-full p-6 m-auto bg-white rounded-md shadow-md lg:max-w-xl">
-                <h1 className="text-3xl font-semibold text-center text-cyan-500 underline">
+                <h1 className="text-3xl font-semibold text-center text-cyan-500">
                     CSVd
                 </h1>
                 <form className="mt-6">
